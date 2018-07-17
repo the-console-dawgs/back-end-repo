@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
-const exampleSchema = new mongoose.Schema({
-  title: {
+const surveySchema = new mongoose.Schema({
+  question: {
     type: String,
     required: true
   },
-  text: {
-    type: String,
+  response: {
+    type: Boolean,
     required: true
   },
   owner: {
@@ -18,4 +18,4 @@ const exampleSchema = new mongoose.Schema({
   timestamps: true
 })
 
-module.exports = mongoose.model('Example', exampleSchema)
+module.exports = mongoose.model('Example', surveySchema)
