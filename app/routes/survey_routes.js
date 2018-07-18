@@ -56,6 +56,25 @@ router.get('/surveys/:id', requireToken, (req, res) => {
     .catch(err => handle(err, res))
 })
 
+
+// get user specific surveys
+router.get('/surveys', requireToken, (req, res) => {
+  // req.params.id will be set based on the `:id` in the route
+  Survey.findById(req.params.id)
+    .then(handle404)
+    // if `findById` is succesful, respond with 200 and "surveys" JSON
+    .then(survey => res.status(200).json({ survey: survey.toObject() }))
+    // if an error occurs, pass it to the handler
+    .catch(err => handle(err, res))
+})
+
+
+
+
+
+
+
+
 // CREATE
 // POST /surveys
 router.post('/surveys', requireToken, (req, res) => {
