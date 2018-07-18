@@ -4,7 +4,8 @@ const express = require('express')
 const passport = require('passport')
 
 // pull in Mongoose model for surveys
-const Survey = require('../models/survey')
+const modelsFile = require('../models/survey')
+const Survey = modelsFile.Survey
 
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
@@ -56,31 +57,23 @@ router.get('/surveys/:id', requireToken, (req, res) => {
     .catch(err => handle(err, res))
 })
 
-
 // get user specific surveys
-router.get('/surveys', requireToken, (req, res) => {
-  // req.params.id will be set based on the `:id` in the route
-  Survey.findById(req.params.id)
-    .then(handle404)
-    // if `findById` is succesful, respond with 200 and "surveys" JSON
-    .then(survey => res.status(200).json({ survey: survey.toObject() }))
-    // if an error occurs, pass it to the handler
-    .catch(err => handle(err, res))
-})
-
-
-
-
-
-
-
+// router.get('/surveys', requireToken, (req, res) => {
+//   // req.params.id will be set based on the `:id` in the route
+//   Survey.findById(req.params.id)
+//     .then(handle404)
+//     // if `findById` is succesful, respond with 200 and "surveys" JSON
+//     .then(survey => res.status(200).json({ survey: survey.toObject() }))
+//     // if an error occurs, pass it to the handler
+//     .catch(err => handle(err, res))
+// })
 
 // CREATE
 // POST /surveys
 router.post('/surveys', requireToken, (req, res) => {
   // set owner of new surveys to be current user
   req.body.survey.owner = req.user.id
-
+  console.log('req.user.id is ', req.user.id)
   Survey.create(req.body.survey)
     // respond to succesful `create` with status 201 and JSON of new "surveys"
     .then(survey => {
