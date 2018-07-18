@@ -36,7 +36,7 @@ router.get('/surveys', requireToken, (req, res) => {
       // `surveys` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
-      return surveys.map(surveys => surveys.toObject())
+      return surveys.map(survey => survey.toObject())
     })
     // respond with status 200 and JSON of the surveys
     .then(surveys => res.status(200).json({ surveys: surveys }))
@@ -51,7 +51,7 @@ router.get('/surveys/:id', requireToken, (req, res) => {
   Survey.findById(req.params.id)
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "surveys" JSON
-    .then(surveys => res.status(200).json({ surveys: surveys.toObject() }))
+    .then(survey => res.status(200).json({ survey: survey.toObject() }))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
 })
@@ -60,12 +60,12 @@ router.get('/surveys/:id', requireToken, (req, res) => {
 // POST /surveys
 router.post('/surveys', requireToken, (req, res) => {
   // set owner of new surveys to be current user
-  req.body.surveys.owner = req.user.id
+  req.body.survey.owner = req.user.id
 
-  Survey.create(req.body.surveys)
+  Survey.create(req.body.survey)
     // respond to succesful `create` with status 201 and JSON of new "surveys"
-    .then(surveys => {
-      res.status(201).json({ surveys: surveys.toObject() })
+    .then(survey => {
+      res.status(201).json({ survey: survey.toObject() })
     })
     // if an error occurs, pass it off to our error handler
     // the error handler needs the error message and the `res` object so that it
@@ -78,26 +78,26 @@ router.post('/surveys', requireToken, (req, res) => {
 router.patch('/surveys/:id', requireToken, (req, res) => {
   // if the client attempts to change the `owner` property by including a new
   // owner, prevent that by deleting that key/value pair
-  delete req.body.surveys.owner
+  delete req.body.survey.owner
 
   Survey.findById(req.params.id)
     .then(handle404)
-    .then(surveys => {
+    .then(survey => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, surveys)
+      requireOwnership(req, survey)
 
       // the client will often send empty strings for parameters that it does
       // not want to update. We delete any key/value pair where the value is
       // an empty string before updating
-      Object.keys(req.body.surveys).forEach(key => {
-        if (req.body.surveys[key] === '') {
-          delete req.body.surveys[key]
+      Object.keys(req.body.survey).forEach(key => {
+        if (req.body.survey[key] === '') {
+          delete req.body.survey[key]
         }
       })
 
       // pass the result of Mongoose's `.update` to the next `.then`
-      return surveys.update(req.body.surveys)
+      return survey.update(req.body.survey)
     })
     // if that succeeded, return 204 and no JSON
     .then(() => res.sendStatus(204))
@@ -110,11 +110,11 @@ router.patch('/surveys/:id', requireToken, (req, res) => {
 router.delete('/surveys/:id', requireToken, (req, res) => {
   Survey.findById(req.params.id)
     .then(handle404)
-    .then(surveys => {
+    .then(survey => {
       // throw an error if current user doesn't own `surveys`
-      requireOwnership(req, surveys)
+      requireOwnership(req, survey)
       // delete the surveys ONLY IF the above didn't throw
-      surveys.remove()
+      survey.remove()
     })
     // send back 204 and no content if the deletion succeeded
     .then(() => res.sendStatus(204))
