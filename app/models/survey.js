@@ -5,10 +5,10 @@ const surveySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  response: {
-    type: Boolean,
-    required: true
-  },
+  responses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Response'
+  }],
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -18,4 +18,18 @@ const surveySchema = new mongoose.Schema({
   timestamps: true
 })
 
-module.exports = mongoose.model('Survey', surveySchema)
+const responseSchema = new mongoose.Schema({
+  value: Boolean,
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Survey'
+  }
+})
+
+const Response = mongoose.model('Response', responseSchema)
+const Survey = mongoose.model('Survey', surveySchema)
+
+module.exports = {
+  Survey,
+  Response
+}
