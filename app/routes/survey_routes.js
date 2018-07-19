@@ -54,7 +54,7 @@ router.get('/surveys/:id', requireToken, (req, res) => {
   Survey.findById(req.params.id)
     .then(handle404)
     .then(survey => {
-      theSurvey = survey
+      theSurvey = survey.toObject()
       const responses = Response.find({
         'survey': req.params.id
       })
@@ -62,14 +62,14 @@ router.get('/surveys/:id', requireToken, (req, res) => {
     })
     // attach the array of responses as property of survey
     .then(responses => {
-      theSurvey.responses = responses
+      theSurvey.responses = responses.map(response => response.toObject())
       console.log('theSurvey is ', theSurvey)
       console.log('theSurvey.responses is ', theSurvey.responses)
       return theSurvey
     })
     // .then(console.log)
     // if `findById` is succesful, respond with 200 and "surveys" JSON
-    .then(survey => res.status(200).json({ survey: survey.toObject() }))
+    .then(survey => res.status(200).json({ survey: theSurvey }))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
 })
