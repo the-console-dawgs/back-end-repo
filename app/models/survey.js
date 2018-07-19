@@ -20,7 +20,7 @@ const surveySchema = new mongoose.Schema({
 
 const responseSchema = new mongoose.Schema({
   value: Boolean,
-  author: {
+  survey: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Survey'
   }
