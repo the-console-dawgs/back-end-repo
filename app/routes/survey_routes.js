@@ -6,6 +6,7 @@ const passport = require('passport')
 // pull in Mongoose model for surveys
 const modelsFile = require('../models/survey')
 const Survey = modelsFile.Survey
+const Response = modelsFile.Response
 
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
@@ -49,8 +50,24 @@ router.get('/surveys', requireToken, (req, res) => {
 // GET /surveys/5a7db6c74d55bc51bdf39793
 router.get('/surveys/:id', requireToken, (req, res) => {
   // req.params.id will be set based on the `:id` in the route
+  let theSurvey
   Survey.findById(req.params.id)
     .then(handle404)
+    .then(survey => {
+      theSurvey = survey
+      const responses = Response.find({
+        'survey': req.params.id
+      })
+      return responses
+    })
+    // attach the array of responses as property of survey
+    .then(responses => {
+      theSurvey.responses = responses
+      console.log('theSurvey is ', theSurvey)
+      console.log('theSurvey.responses is ', theSurvey.responses)
+      return theSurvey
+    })
+    // .then(console.log)
     // if `findById` is succesful, respond with 200 and "surveys" JSON
     .then(survey => res.status(200).json({ survey: survey.toObject() }))
     // if an error occurs, pass it to the handler

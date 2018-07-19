@@ -3,6 +3,8 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
+const mongoose = require('mongoose')
+
 // pull in Mongoose model for responses
 const modelsFile = require('../models/survey')
 const Response = modelsFile.Response
@@ -74,7 +76,8 @@ router.post('/responses', requireToken, (req, res) => {
   // console.log('response.survey ', req)
   let response = req.body.response
   console.log('req.body.response.surveyId ', req.body.response.surveyId)
-  response.survey = req.body.response.surveyId
+  const id = new mongoose.Types.ObjectId(req.body.response.surveyId)
+  response.survey = id
   // response.survey = <Survey ID>
   Response.create(response)
     // respond to succesful `create` with status 201 and JSON of new "responses"
