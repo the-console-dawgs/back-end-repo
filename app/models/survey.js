@@ -15,7 +15,7 @@ const surveySchema = new mongoose.Schema({
 })
 
 const responseSchema = new mongoose.Schema({
-  value: Boolean,
+  value: String,
   survey: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Survey'
