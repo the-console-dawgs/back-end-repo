@@ -65,9 +65,6 @@ router.get('/responses/:id', requireToken, (req, res) => {
     // attach the array of responses as property of survey
     .then(responses => {
       theSurvey.responses = responses.map(response => response.toObject())
-      console.log('theSurvey is ', theSurvey)
-      console.log('theSurvey.responses is ', theSurvey.responses)
-      return theSurvey
     })
     // .then(console.log)
     // if `findById` is succesful, respond with 200 and "surveys" JSON
@@ -103,7 +100,6 @@ router.post('/responses', requireToken, (req, res) => {
   // req.body.response.owner = req.user.id
   // console.log('response.survey ', req)
   let response = req.body.response
-  console.log('req.body.response.surveyId ', req.body.response.surveyId)
   const id = new mongoose.Types.ObjectId(req.body.response.surveyId)
   response.survey = id
   // response.survey = <Survey ID>
