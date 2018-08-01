@@ -63,8 +63,6 @@ router.get('/surveys/:id', requireToken, (req, res) => {
     // attach the array of responses as property of survey
     .then(responses => {
       theSurvey.responses = responses.map(response => response.toObject())
-      console.log('theSurvey is ', theSurvey)
-      console.log('theSurvey.responses is ', theSurvey.responses)
       return theSurvey
     })
     // .then(console.log)
@@ -90,7 +88,6 @@ router.get('/surveys/:id', requireToken, (req, res) => {
 router.post('/surveys', requireToken, (req, res) => {
   // set owner of new surveys to be current user
   req.body.survey.owner = req.user.id
-  console.log('req.user.id is ', req.user.id)
   Survey.create(req.body.survey)
     // respond to succesful `create` with status 201 and JSON of new "surveys"
     .then(survey => {
