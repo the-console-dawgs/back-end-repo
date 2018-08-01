@@ -48,25 +48,53 @@ router.get('/responses', requireToken, (req, res) => {
     .catch(err => handle(err, res))
 })
 
-// SHOW
-// GET /responses/5a7db6c74d55bc51bdf39793
+// SHOW SURVEY RESPONSES
+// GET /reponses/5a7db6c74d55bc51bdf39793
 router.get('/responses/:id', requireToken, (req, res) => {
   // req.params.id will be set based on the `:id` in the route
+  let theSurvey
   Survey.findById(req.params.id)
-    .populate('responses')
-    .exec((error, survey) => {
-      if (error) {
-        console.error(error)
-      }
-      console.log('survey.responses is: ', survey.responses)
-      return survey
-    })
     .then(handle404)
-    // if `findById` is succesful, respond with 200 and "responses" JSON
-    .then(response => res.status(200).json({ response: response.toObject() }))
+    .then(survey => {
+      theSurvey = survey.toObject()
+      const responses = Response.find({
+        'survey': req.params.id
+      })
+      return responses
+    })
+    // attach the array of responses as property of survey
+    .then(responses => {
+      theSurvey.responses = responses.map(response => response.toObject())
+      console.log('theSurvey is ', theSurvey)
+      console.log('theSurvey.responses is ', theSurvey.responses)
+      return theSurvey
+    })
+    // .then(console.log)
+    // if `findById` is succesful, respond with 200 and "surveys" JSON
+    .then(survey => res.status(200).json({ survey: theSurvey.responses }))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
 })
+
+// // SHOW
+// // GET /responses/5a7db6c74d55bc51bdf39793
+// router.get('/responses/:id', requireToken, (req, res) => {
+//   // req.params.id will be set based on the `:id` in the route
+//   Survey.findById(req.params.id)
+//     .populate('responses')
+//     .exec((error, survey) => {
+//       if (error) {
+//         console.error(error)
+//       }
+//       console.log('survey.responses is: ', survey.responses)
+//       return survey
+//     })
+//     .then(handle404)
+//     // if `findById` is succesful, respond with 200 and "responses" JSON
+//     .then(response => res.status(200).json({ response: response.toObject() }))
+//     // if an error occurs, pass it to the handler
+//     .catch(err => handle(err, res))
+// })
 
 // CREATE
 // POST /responses
